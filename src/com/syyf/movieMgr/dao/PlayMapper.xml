@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.PlayMapper">
+	<!-- 查询所有数据的条数 -->
+	<select id="count" resultType="string">
+		select count(*) from (select p.play_time play_time,to_char(p.play_id) play_id,to_char(m.movie_id) movie_id,to_char(m.movie_long) movie_long,m.movie_name movie_name,l.language_name language_name,e.edition_name edition_name,m.movie_date movie_date from play p
+		inner join movie m on p.play_movie = m.movie_id
+		inner join language l on m.movie_language = l.language_id
+		inner join edition e on e.edition_id = m.movie_edition
+		<where>
+			<if test="_parameter != null">
+				<if test="playStart != null and playStart != '' and playEnd != null and playEnd != ''">
+					and p.play_time between #{playStart} and #{playEnd}
+				</if>
+			</if>
+		</where>
+		)
+	</select>
+
+	<select id="queryBetween" resultType="map">
+		<!-- 这里需要将影片时长转化为字符型 to_char()并且记得取别名 -->
+		select * from (select t.*,rownum rn from (select p.play_time play_time,to_char(p.play_id) play_id,to_char(m.movie_id) movie_id,to_char(m.movie_long) movie_long,m.movie_name movie_name,l.language_name language_name,e.edition_name edition_name,m.movie_date movie_date from play p
+		inner join movie m on p.play_movie = m.movie_id
+		inner join language l on m.movie_language = l.language_id
+		inner join edition e on e.edition_id = m.movie_edition
+		<where>
+			<if test="_parameter != null">
+				<if test="playStart != null and playStart != '' and playEnd != null and playEnd != ''">
+					and p.play_time between #{playStart} and #{playEnd}
+				</if>
+			</if>
+		</where>
+		) t) where rn between #{beginData} and #{endData}
+	</select>
+	
+	<select id="selectMovie" resultType="map">
+		select to_char(m.movie_id) movie_id,m.movie_name,e.edition_name,l.language_name,k.kind_name  from movie m
+		inner join edition e on m.movie_edition = e.edition_id
+		inner join language l on m.movie_language = l.language_id
+		inner join kind k on m.movie_kind = k.kind_id
+		order by m.movie_name
+	</select>
+	
+	<insert id="add">
+		<selectKey keyProperty="play_id" order="BEFORE" resultType="String">
+			select seq_play_play_id.nextval from dual
+		</selectKey>
+		insert into play values(#{play_id},#{play_movie},#{play_time},#{play_price})
+	</insert>
+	
+	<!-- 查询电影场次信息 -->
+	<select id="singlePlay" resultType="map">
+		select m.movie_name,m.movie_director,m.movie_actor,l.language_name,k.kind_name,to_char(m.movie_long) movie_long,e.edition_name,m.movie_date,m.movie_info,m.movie_photo from movie m
+		inner join edition e on m.movie_edition = e.edition_id
+		inner join language l on m.movie_language = l.language_id
+		inner join kind k on m.movie_kind = k.kind_id
+		where m.movie_id = '${value}'
+	</select>
+	
+	<select id="single" resultType="play">
+		select * from play where play_id = '${value}'
+	</select>
+	
+	<update id="update">
+		update play set play_time=#{play_time},play_price=#{play_price} where play_id=#{play_id}
+	</update>
+	
+	<delete id="delete">
+		delete from play where play_id = '${value}'
+	</delete>
+</mapper>

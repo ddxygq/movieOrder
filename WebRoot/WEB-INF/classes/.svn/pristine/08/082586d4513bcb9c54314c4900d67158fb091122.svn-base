@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.LanguageMapper">
+	<select id="queryAll" resultType="language">
+		select * from language
+	</select>
+	
+	<insert id="add">
+		<selectKey keyProperty="language_id" order="BEFORE" resultType="String">
+			select seq_language_language_id.nextval from dual
+		</selectKey>
+		insert into language values(#{language_id},#{language_name})
+	</insert>
+</mapper>

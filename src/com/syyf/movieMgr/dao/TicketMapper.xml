@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.TicketMapper">
+	<!-- 
+		<resultMap type="ticket" id="order">
+			<id property="ticket_id" column="ticket_id"></id>
+			<result property="ticket_seat" column="ticket_seat"></result>
+			<result property="ticket_date" column="ticket_date"></result>
+			<result property="ticket_flag" column="ticket_flag"></result>
+			<result property="ticket_member" column="ticket_member"></result>
+			<result property="ticket_code" column="ticket_code"></result>
+			<result property="ticket_play" column="ticket_play"></result>
+			
+			<association property="language" javaType="language">
+				<id property="language_id" column="language_id"></id>
+				<result property="language_name" column="language_name"></result>
+			</association>	
+			<association property="edition" javaType="edition">
+				<id property="edition_id" column="edition_id"></id>
+				<result property="edition_name" column="edition_name"></result>
+			</association>
+				<association property="member" javaType="member">
+				<id property="member_id" column="member_id"></id>
+				<result property="member_email" column="member_email"></result>
+				<result property="member_name" column="member_name"></result>				
+			</association>
+			
+			<association property="movie" javaType="movie">
+				<id property="movie_id" column="movie_id"></id>
+				<result property="movie_name" column="movie_name"></result>
+				<result property="movie_language" column="movie_language"></result>				
+				<result property="movie_edition" column="movie_edition"></result>				
+				<result property="movie_date" column="movie_date"></result>				
+			</association>
+			<association property="play" javaType="play">
+				<id property="play_id" column="play_id"></id>
+				<result property="play_price" column="play_price"></result>				
+				<result property="play_movie" column="play_movie"></result>					
+			</association>
+		</resultMap>
+	 -->
+	<select id="query" resultType="map">
+		select m.member_email,m.member_name,t.ticket_seat,t.ticket_date,t.ticket_flag,
+		mv.movie_name,p.play_price,mv.movie_date,l.language_name,e.edition_name
+		from member m 
+		inner join ticket t on m.member_id = t.ticket_member
+		inner join play p on p.play_id = t.ticket_play
+		inner join movie mv on mv.movie_id = p.play_movie
+		inner join language l on mv.movie_language = l.language_id
+		inner join edition e on mv.movie_edition = e.edition_id
+		and t.ticket_code=#{ticket_code,jdbcType=VARCHAR}
+	</select>
+</mapper>

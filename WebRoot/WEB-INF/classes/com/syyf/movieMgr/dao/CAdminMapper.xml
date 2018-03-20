@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.CAdminMapper">
+	<insert id="add">
+		<selectKey keyProperty="admin_id" order="BEFORE" resultType="String">
+			select seq_admin_admin_id.nextval from dual
+		</selectKey>
+		insert into admin values(#{admin_id}, #{admin_name}, #{admin_pwd}, #{admin_privilege})
+	</insert>
+	
+	<delete id="delete">
+		delete from admin where admin_id=#{aid}
+	</delete>
+
+	<update id="update">
+		update admin set admin_name=#{admin_name},admin_pwd=#{admin_pwd},admin_privilege=#{admin_privilege} where admin_id=#{admin_id}
+	</update>
+	
+	<select id="querySingle" resultType="admin">
+		select * from admin where admin_id=#{aid}
+	</select>
+	
+	<select id="queryAll" resultType="admin">
+		select * from admin
+	</select>
+</mapper>

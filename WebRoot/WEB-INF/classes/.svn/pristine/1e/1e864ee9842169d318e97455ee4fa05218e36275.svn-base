@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.MemberMapper">
+
+	<!-- 查询总条数 -->
+	<select id="count" resultType="string">
+		select count(*) from member
+	</select>
+	
+	<!-- 模糊查询 -->
+	<select id="queryPage" resultType="member">
+		select * from (select t.*,rownum rn from (select * from member
+		<where>
+			<if test="_parameter != null">
+				<if test="member_name != null and member_name != ''">
+					and member_name like '%${member_name}%'
+				</if>
+			</if>
+		</where>
+		) t) where rn between #{beginData} and #{endData}
+	</select>
+	
+	<insert id="add">
+		<selectKey keyProperty="member_id" order="BEFORE" resultType="String">
+			select seq_member_member_id.nextval from dual
+		</selectKey>
+		insert into member values(#{member_id},#{member_email},#{member_pwd},#{member_name,jdbcType=VARCHAR},#{member_phone,jdbcType=VARCHAR},#{member_money,jdbcType=VARCHAR},#{member_gender,jdbcType=VARCHAR},#{member_photo,jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 查询单条 -->
+	<select id="single" resultType="member">
+		select * from member where member_id = '${value}'
+	</select>
+	
+	<!-- 修改 -->
+	<update id="update">
+		update member set member_email=#{member_email},member_name=#{member_name},member_gender=#{member_gender},member_pwd=#{member_pwd},member_phone=#{member_phone} where member_id = #{member_id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete">
+		delete from member where member_id = ${value}
+	</delete>
+</mapper>

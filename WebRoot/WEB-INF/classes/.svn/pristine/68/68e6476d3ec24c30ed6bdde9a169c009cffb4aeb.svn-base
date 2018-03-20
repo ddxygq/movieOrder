@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syyf.movieMgr.dao.MovieMapper">
+	<select id="queryLike" resultType="map">
+		select * from (select t.*,rownum rn from (select m.movie_id,m.movie_name,m.movie_director,m.movie_actor,l.language_name,k.kind_name,m.movie_long,e.edition_name,m.movie_info,m.movie_date from movie m
+		inner join language l on m.movie_language = l.language_id
+		inner join kind k on m.movie_kind = k.kind_id
+		inner join edition e on m.movie_edition = e.edition_id
+		<where>
+			<if test="_parameter != null">
+				<if test="movie_name != null and movie_name != ''">
+					and movie_name like '%${movie_name}%'
+				</if>
+			</if>
+		</where>
+		) t) where rn between #{beginData} and #{endData}
+	</select>
+	
+	<select id="count" resultType="String">
+		select count(*) from movie
+		<where>
+			<if test="_parameter != null">
+				<if test="movie_name != null and movie_name != ''">
+					and movie_name like '%${movie_name}%'
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 单条查询 -->
+	<select id="querySingle" resultType="movie">
+		select * from movie where movie_id = #{movie_id}
+	</select>
+	
+	<insert id="add">
+		<selectKey keyProperty="movie_id" order="BEFORE" resultType="String">
+			select seq_movie_movie_id.nextval from dual
+		</selectKey>
+		insert into movie values(#{movie_id},#{movie_name},#{movie_director},#{movie_actor},#{movie_info},#{movie_language},#{movie_kind},#{movie_photo},#{movie_long},#{movie_date},#{movie_edition})
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update">
+		update movie set movie_name=#{movie_name},movie_director=#{movie_director},movie_actor=#{movie_actor},movie_info=#{movie_info},movie_language=#{movie_language},movie_kind=#{movie_kind},movie_photo=#{movie_photo},movie_long=#{movie_long},movie_date=#{movie_date},movie_edition=#{movie_edition} where movie_id=#{movie_id}
+	</update>
+	
+	<delete id="delete">
+		delete from movie where movie_id=#{movie_id}
+	</delete>
+	
+	<!-- 查询所有影片 -->
+	<select id="distinct" resultType="String">
+		select distinct movie_name from movie
+	</select>
+</mapper>
